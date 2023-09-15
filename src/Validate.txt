@@ -1,0 +1,77 @@
+Inicio  
+    // Constantes para paréntesis de apertura y cierre
+    constante CARACTER_PARÉNTESIS_CIERRE = ')';
+    constante CARACTER_PARÉNTESIS_APERTURA = '(';
+
+    // Procedimiento para verificar si un carácter es un operador
+    Procedimiento esOperador(carácter c) -> Booleano
+        Si (c es igual a '+' o c es igual a '-' o c es igual a '*' o c es igual a '/' o c es igual a '^') entonces
+            Devolver Verdadero
+        Sino
+            Devolver Falso
+        Fin Si
+
+    // Procedimiento para verificar si un carácter es un operando (letra o número)
+    Procedimiento esOperando(carácter c) -> Booleano
+        Si ((c está en el rango de 'a' a 'z') o (c está en el rango de 'A' a 'Z')) entonces
+            Devolver Verdadero
+        Sino
+            Devolver Falso
+        Fin Si
+
+    Procedimiento mostrarError(expresión, contador) -> Cadena
+        Devolver expresión + "\n" + " ".repetir(contador) + "^"
+
+    Procedimiento validarExpresiónInfija(expresión) -> Booleano
+        Resultado = Falso
+        balanceOperandesYOperadores = 0
+        númeroParéntesis = 0
+        contador = 0
+        longitud = longitud(expresión) - 1
+        
+        Para cada carácter c en expresión hacer
+            Si (esOperando(c)) entonces
+                balanceOperandesYOperadores++
+            Fin Si
+            
+            Si (esOperador(c)) entonces
+                balanceOperandesYOperadores--
+                Si (contador es igual a 0) entonces
+                    Lanzar un Error("La expresión no puede comenzar con un operador." + "\n" + mostrarError(expresión, contador))
+                Fin Si
+                
+                Si (contador es igual a longitud) entonces
+                    Lanzar un Error("La expresión no puede terminar con un operador." + "\n" + mostrarError(expresión, contador))
+                Fin Si
+            Fin Si
+            
+            Si (balanceOperandesYOperadores > 1) entonces
+                Lanzar un Error("Operando inesperado. Se esperaba un operador." + "\n" + mostrarError(expresión, contador))
+            Fin Si
+            
+            Si (balanceOperandesYOperadores < 0) entonces
+                Lanzar un Error("Operador inesperado. Se esperaba un operando en la posición." + "\n" + mostrarError(expresión, contador))
+            Fin Si
+            Sino Si (c es igual a CARACTER_PARÉNTESIS_APERTURA) entonces
+                númeroParéntesis++
+            Sino Si (c es igual a CARACTER_PARÉNTESIS_CIERRE) entonces
+                númeroParéntesis--
+            Fin Sino
+            
+            contador++
+        Fin Para
+        
+        Si (númeroParéntesis > 0) entonces
+            Lanzar un Error("Paréntesis '(' inesperado. Falta un ')'")
+        Fin Si
+        
+        Si (númeroParéntesis < 0) entonces
+            Lanzar un Error("Paréntesis ')' inesperado. Falta un '('")
+        Fin Si
+        
+        Si (balanceOperandesYOperadores == 1) entonces
+            Resultado = Verdadero
+        Fin Si
+        
+        Devolver Resultado
+Fin
