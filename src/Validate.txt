@@ -1,77 +1,127 @@
-Inicio  
-    // Constantes para paréntesis de apertura y cierre
-    constante CARACTER_PARÉNTESIS_CIERRE = ')';
-    constante CARACTER_PARÉNTESIS_APERTURA = '(';
+Clase ExpressionConverter
+    Carácter CLOSING_PARENTHESIS = ')'
+    Carácter OPENING_PARENTHESIS = '('
 
-    // Procedimiento para verificar si un carácter es un operador
-    Procedimiento esOperador(carácter c) -> Booleano
-        Si (c es igual a '+' o c es igual a '-' o c es igual a '*' o c es igual a '/' o c es igual a '^') entonces
-            Devolver Verdadero
-        Sino
-            Devolver Falso
-        Fin Si
+    Función esOperador(caracter c) -> Booleano
+        Devolver (c == '+' || c == '-' || c == '*' || c == '/' || c == '^')
 
-    // Procedimiento para verificar si un carácter es un operando (letra o número)
-    Procedimiento esOperando(carácter c) -> Booleano
-        Si ((c está en el rango de 'a' a 'z') o (c está en el rango de 'A' a 'Z')) entonces
-            Devolver Verdadero
-        Sino
-            Devolver Falso
-        Fin Si
+    Función esOperando(caracter c) -> Booleano
+        Devolver ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 
-    Procedimiento mostrarError(expresión, contador) -> Cadena
-        Devolver expresión + "\n" + " ".repetir(contador) + "^"
+    Función mostrarError(cadena expression, entero contador) -> Cadena
+        Devolver expression + "\n" + " ".repetir(contador) + "^"
 
-    Procedimiento validarExpresiónInfija(expresión) -> Booleano
-        Resultado = Falso
-        balanceOperandesYOperadores = 0
-        númeroParéntesis = 0
-        contador = 0
-        longitud = longitud(expresión) - 1
-        
-        Para cada carácter c en expresión hacer
-            Si (esOperando(c)) entonces
-                balanceOperandesYOperadores++
+    Función obtenerPrioridad(caracter operador) -> Entero
+        Cambiar operador Hacer
+            Caso '+':
+            Caso '-':
+                Devolver 1
+            Caso '*':
+            Caso '/':
+                Devolver 2
+            Caso '^':
+                Devolver 3
+        Fin Cambiar
+        Devolver 0
+
+    Función validarExpresionInfija(cadena expression) -> Booleano
+        Booleano resultado = Falso
+        Entero balanceOperandesYOperadores = 0
+        Entero numeroParentesis = 0
+        Entero contador = 0
+        Booleano ultimoEsOperador = Falso
+        Entero longitud = longitud(expression) - 1
+        Para cada carácter c en convertirACaracteres(expression) Hacer
+            Si c == OPENING_PARENTHESIS Entonces
+                Incrementar numeroParentesis en 1
+                ultimoEsOperador = Falso
             Fin Si
-            
-            Si (esOperador(c)) entonces
-                balanceOperandesYOperadores--
-                Si (contador es igual a 0) entonces
-                    Lanzar un Error("La expresión no puede comenzar con un operador." + "\n" + mostrarError(expresión, contador))
-                Fin Si
-                
-                Si (contador es igual a longitud) entonces
-                    Lanzar un Error("La expresión no puede terminar con un operador." + "\n" + mostrarError(expresión, contador))
+            Si c == CLOSING_PARENTHESIS Entonces
+                Decrementar numeroParentesis en 1
+                Si no ultimoEsOperador Entonces
+                    Lanzar un Error("Un paréntesis no puede preceder o seguir a un operador." + "\n" + mostrarError(expression, contador))
                 Fin Si
             Fin Si
-            
-            Si (balanceOperandesYOperadores > 1) entonces
-                Lanzar un Error("Operando inesperado. Se esperaba un operador." + "\n" + mostrarError(expresión, contador))
+            Si esOperando(c) Entonces
+                Incrementar balanceOperandesYOperadores en 1
+                ultimoEsOperador = Verdadero
             Fin Si
-            
-            Si (balanceOperandesYOperadores < 0) entonces
-                Lanzar un Error("Operador inesperado. Se esperaba un operando en la posición." + "\n" + mostrarError(expresión, contador))
+            Si esOperador(c) Entonces
+                Decrementar balanceOperandesYOperadores en 1
+                Si contador == 0 Entonces
+                    Lanzar un Error("La expresión no puede comenzar con un operador." + "\n" + mostrarError(expression, contador))
+                Fin Si
+                Si contador == longitud Entonces
+                    Lanzar un Error("La expresión no puede terminar con un operador." + "\n" + mostrarError(expression, contador))
+                Fin Si
+                Si no ultimoEsOperador Entonces
+                    Lanzar un Error("Operador inesperado." + "\n" + mostrarError(expression, contador))
+                Fin Si
+                ultimoEsOperador = Falso
             Fin Si
-            Sino Si (c es igual a CARACTER_PARÉNTESIS_APERTURA) entonces
-                númeroParéntesis++
-            Sino Si (c es igual a CARACTER_PARÉNTESIS_CIERRE) entonces
-                númeroParéntesis--
-            Fin Sino
-            
-            contador++
+            Si balanceOperandesYOperadores > 1 Entonces
+                Lanzar un Error("Operando inesperado. Se esperaba un operador." + "\n" + mostrarError(expression, contador))
+            Fin Si
+            Si balanceOperandesYOperadores < 0 Entonces
+                Lanzar un Error("Operador inesperado. Se esperaba un operando en la posición." + "\n" + mostrarError(expression, contador))
+            Fin Si
+            Incrementar contador en 1
         Fin Para
-        
-        Si (númeroParéntesis > 0) entonces
-            Lanzar un Error("Paréntesis '(' inesperado. Falta un ')'")
+        Si numeroParentesis > 0 Entonces
+            Lanzar un Error("'(' inesperado. Falta un ')'")
         Fin Si
-        
-        Si (númeroParéntesis < 0) entonces
-            Lanzar un Error("Paréntesis ')' inesperado. Falta un '('")
+        Si numeroParentesis < 0 Entonces
+            Lanzar un Error("')' inesperado. Falta un '('")
         Fin Si
-        
-        Si (balanceOperandesYOperadores == 1) entonces
-            Resultado = Verdadero
+        Si balanceOperandesYOperadores == 1 Entonces
+            resultado = Verdadero
         Fin Si
-        
-        Devolver Resultado
-Fin
+        Devolver resultado
+
+    Función push(stack[] de Cadena, elemento de Cadena)
+        Si top == longitud(stack) Entonces
+            Lanzar un Error("Desbordamiento de pila")
+        Fin Si
+        stack[top] = elemento
+        Incrementar top en 1
+
+    Función pop(stack[] de Cadena) -> Cadena
+        Si top == 0 Entonces
+            Lanzar un Error("Desbordamiento inferior de la pila")
+        Fin Si
+        Decrementar top en 1
+        Devolver stack[top]
+
+    Entero top = 0
+
+    Función infijaAPostfija(cadena expression) -> Cadena
+        Si no validarExpresionInfija(expression) Entonces
+            Lanzar un Error("Expresión no válida")
+        Fin Si
+        stack[] de Cadena = nuevo Cadena[longitud(expression)]
+        Cadena postfix = ""
+        Para cada carácter c en convertirACaracteres(expression) Hacer
+            Si esOperando(c) Entonces
+                postfix += c
+            Fin Si
+            Si esOperador(c) Entonces
+                Mientras top > 0 y obtenerPrioridad(stack[top-1][0]) >= obtenerPrioridad(c) Hacer
+                    postfix += pop(stack)
+                Fin Mientras
+                push(stack, convertirACadena(c))
+            Fin Si
+            Si c == OPENING_PARENTHESIS Entonces
+                push(stack, convertirACadena(c))
+            Fin Si
+            Si c == CLOSING_PARENTHESIS Entonces
+                Mientras top > 0 y stack[top-1][0] != OPENING_PARENTHESIS Hacer
+                    postfix += pop(stack)
+                Fin Mientras
+                pop(stack)
+            Fin Si
+        Fin Para
+        Mientras top > 0 Hacer
+            postfix += pop(stack)
+        Fin Mientras
+        Devolver postfix
+Fin Clase
