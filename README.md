@@ -1,18 +1,33 @@
-## Getting Started
+# ExpressionConverter
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+ExpressionConverter es una utilidad Java que proporciona funciones para validar expresiones infixas y convertirlas a notación postfix (postfija). Puede ser útil en aplicaciones que trabajan con expresiones matemáticas o lógicas.
 
-## Folder Structure
+## Características
 
-The workspace contains two folders by default, where:
+- Validación de expresiones infixas para garantizar que estén correctamente formadas.
+- Conversión de expresiones infixas a notación postfix.
+- Tratamiento de operadores, operandos y paréntesis en expresiones matemáticas y lógicas.
+  x Conversión de expresiones infixas a notación prefija. (WIP)
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Requisitos
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+- Java JDK 8 o superior.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## Uso
 
-## Dependency Management
+Puedes usar la clase `ExpressionConverter` de la siguiente manera:
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+```java
+// Validar una expresión infix
+String expression = "a + b * (c - d)";
+if (ExpressionConverter.validateInfixExpression(expression)) {
+    System.out.println("La expresión es válida.");
+} else {
+    System.out.println("La expresión no es válida.");
+}
+
+// Convertir una expresión infix a postfix
+String infixExpression = "a + b * c";
+String postfixExpression = ExpressionConverter.infixToPostfix(infixExpression);
+System.out.println("Expresión postfix: " + postfixExpression);
+```
