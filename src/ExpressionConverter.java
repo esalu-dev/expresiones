@@ -1,18 +1,18 @@
 public class ExpressionConverter {
-    final static char CLOSING_PARENTHESIS = ')';
-    final static char OPENING_PARENTHESIS = '(';
+    private final static char CLOSING_PARENTHESIS = ')';
+    private final static char OPENING_PARENTHESIS = '(';
 
     // Función para verificar si un carácter es un operador
-    public static boolean isOperator(char c) {
+    private static boolean isOperator(char c) {
         return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^');
     }
 
     // Función para verificar si un carácter es un operando (letra o número)
-    public static boolean isOperand(char c) {
+    private static boolean isOperand(char c) {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
     
-    public static String showError(String expression, int contador){
+    private static String showError(String expression, int contador){
         return expression + "\n" + " ".repeat(contador) + "^";
     }
 
@@ -62,7 +62,7 @@ public class ExpressionConverter {
                     throw new Error("Expression cannot end with an operator." + "\n" + showError(expression, contador));
                 }
                 if(!lastIsOperator){
-                    throw new Error("Parenthesis cannot precede or succeed an operator." + "\n" + showError(expression, contador));
+                    throw new Error("Unexpected Operator." + "\n" + showError(expression, contador));
                 }
                 lastIsOperator = false;
             } 
@@ -89,7 +89,7 @@ public class ExpressionConverter {
         return result;
     }
 
-    public static void push(String[] stack, String element){
+    private static void push(String[] stack, String element){
         if(top == stack.length){
             throw new Error("Stack overflow");
         }
@@ -97,7 +97,7 @@ public class ExpressionConverter {
         top++;
     }
 
-    public static String pop(String[] stack){
+    private static String pop(String[] stack){
         if(top == 0){
             throw new Error("Stack underflow");
         }
@@ -105,65 +105,38 @@ public class ExpressionConverter {
         return stack[top];
     }
     
-    static int top = 0;
+    private static int top = 0;
     public static String infixToPostfix(String expression){
-    String[] operatorStack = new String[expression.length()];
-    String result = "";
-    int balanceOperandAndOperator = 0;
-    int numberParenthesis = 0;
-    int contador = 0;
-    int length = expression.length()-1;
-    for (char c : expression.toCharArray()) {
-        if (isOperand(c)) {
-            balanceOperandAndOperator++;
-            result += c;
-        } 
-        if (isOperator(c)) {
-            balanceOperandAndOperator--;
-
-            int prioridad = getPriority(c);
-            while(top > 0 && getPriority(operatorStack[top-1].charAt(0)) >= prioridad){
-                result += pop(operatorStack);
-            }
-            push(operatorStack, Character.toString(c));
-
-            if(contador == 0){
-                throw new Error("Expression cannot start with an operator." + "\n" + showError(expression, contador));
-            }
-            if(contador == length){
-                throw new Error("Expression cannot end with an operator." + "\n" + showError(expression, contador));
-            }
-        } 
-        if(balanceOperandAndOperator > 1){
-            throw new Error("Unexpected operand. Expected Operator." + "\n" + showError(expression, contador));
+        if(!validateInfixExpression(expression)){
+            throw new Error("Invalid expression");
         }
-        if(balanceOperandAndOperator < 0){
-            throw new Error("Unexpected operator. Expected Operand in posis." + "\n" + showError(expression, contador));
+        String[] stack = new String[expression.length()];
+        String postfix = "";
+        for(char c : expression.toCharArray()){
+            if(isOperand(c)){
+                postfix += c;
+            }
+            if(isOperator(c)){
+                while(top > 0 && getPriority(stack[top-1].charAt(0)) >= getPriority(c)){
+                    postfix += pop(stack);
+                }
+                push(stack, String.valueOf(c));
+            }
+            if(c == OPENING_PARENTHESIS){
+                push(stack, String.valueOf(c));
+            }
+            if(c == CLOSING_PARENTHESIS){
+                while(top > 0 && stack[top-1].charAt(0) != OPENING_PARENTHESIS){
+                    postfix += pop(stack);
+                }
+                pop(stack);
+            }
         }
-        if (c == OPENING_PARENTHESIS) {
-            numberParenthesis++;
-        } 
-        if (c == CLOSING_PARENTHESIS) {
-            numberParenthesis--;
+        while(top > 0){
+            postfix += pop(stack);
         }
-        contador++;
+        return postfix;
     }
-    while (top > 0) {
-        result += pop(operatorStack);
-        top--;
-    }
-    if(numberParenthesis > 0 ){
-        throw new Error("Unexpected '('. There is a missing ')'");
-    }
-    
-    if(numberParenthesis < 0){
-        throw new Error("Unexpected ')'. There is a missing '('");
-    }
-    
-    
-    return result;
-}
-
 
     
 }
