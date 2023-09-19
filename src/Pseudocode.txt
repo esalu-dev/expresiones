@@ -12,7 +12,7 @@ Clase ExpressionConverter
         Devolver expression + "\n" + " ".repetir(contador) + "^"
 
     Función obtenerPrioridad(caracter operador) -> Entero
-        Cambiar operador Hacer
+        Segun operador Hacer
             Caso '+':
             Caso '-':
                 Devolver 1
@@ -21,7 +21,7 @@ Clase ExpressionConverter
                 Devolver 2
             Caso '^':
                 Devolver 3
-        Fin Cambiar
+        Fin Segun
         Devolver 0
 
     Función validarExpresionInfija(cadena expression) -> Booleano
@@ -124,4 +124,20 @@ Clase ExpressionConverter
             postfix <- postfix + pop(stack)
         Fin Mientras
         Devolver postfix
+
+    Función infijaAPrefija(cadena expression) -> Cadena
+        Si no validarExpresionInfija(expression) Entonces
+            Lanzar un Error("Expresión no válida")
+        Fin Si
+        CadenaBuilder reversedInfix <- nuevo CadenaBuilder(reverse(expression))
+        Para entero i <- 0; i < longitud(reversedInfix); Incrementar i en 1 Hacer
+            Si reversedInfix[i] = '(' Entonces
+                reversedInfix[i] <- ')'
+            Sino Si reversedInfix[i] = ')' Entonces
+                reversedInfix[i] <- '('
+            Fin Si
+        Fin Para
+        Cadena postfix <- infijaAPostfija(convertirACadena(reversedInfix.toString()))
+        Devolver reverse(postfix)
+    Fin Función
 Fin Clase

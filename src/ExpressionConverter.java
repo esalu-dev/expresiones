@@ -138,5 +138,20 @@ public class ExpressionConverter {
         return postfix;
     }
 
+    public static String infixToPrefix(String expression){
+        if(!validateInfixExpression(expression)){
+            throw new Error("Invalid expression");
+        }
+        StringBuilder reversedInfix = new StringBuilder(expression).reverse();
+        for (int i = 0; i < reversedInfix.length(); i++) {
+            if (reversedInfix.charAt(i) == '(') {
+                reversedInfix.setCharAt(i, ')');
+            } else if (reversedInfix.charAt(i) == ')') {
+                reversedInfix.setCharAt(i, '(');
+            }
+        }
+        String postfix = infixToPostfix(reversedInfix.toString());
+        return new StringBuilder(postfix).reverse().toString();
+    }
     
 }

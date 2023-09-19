@@ -13,6 +13,8 @@ public class Main {
          String postfixExpression = ExpressionConverter.infixToPostfix(expression);
          System.out.println("Expresión posfija: " + postfixExpression);
 
+         String prefixExpression = ExpressionConverter.infixToPrefix(expression);
+          System.out.println("Expresión prefija: " + prefixExpression);
         
         sc.close();
     }
