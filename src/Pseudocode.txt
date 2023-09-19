@@ -1,9 +1,9 @@
 Clase ExpressionConverter
-    Carácter CLOSING_PARENTHESIS = ')'
-    Carácter OPENING_PARENTHESIS = '('
+    Carácter CLOSING_PARENTHESIS <- ')'
+    Carácter OPENING_PARENTHESIS <- '('
 
     Función esOperador(caracter c) -> Booleano
-        Devolver (c == '+' || c == '-' || c == '*' || c == '/' || c == '^')
+        Devolver (c = '+' || c = '-' || c = '*' || c = '/' || c = '^')
 
     Función esOperando(caracter c) -> Booleano
         Devolver ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
@@ -25,18 +25,18 @@ Clase ExpressionConverter
         Devolver 0
 
     Función validarExpresionInfija(cadena expression) -> Booleano
-        Booleano resultado = Falso
-        Entero balanceOperandesYOperadores = 0
-        Entero numeroParentesis = 0
-        Entero contador = 0
-        Booleano ultimoEsOperador = Falso
-        Entero longitud = longitud(expression) - 1
+        Booleano resultado <- Falso
+        Entero balanceOperandesYOperadores <- 0
+        Entero numeroParentesis <- 0
+        Entero contador <- 0
+        Booleano ultimoEsOperador <- Falso
+        Entero longitud <- longitud(expression) - 1
         Para cada carácter c en convertirACaracteres(expression) Hacer
-            Si c == OPENING_PARENTHESIS Entonces
+            Si c = OPENING_PARENTHESIS Entonces
                 Incrementar numeroParentesis en 1
-                ultimoEsOperador = Falso
+                ultimoEsOperador <- Falso
             Fin Si
-            Si c == CLOSING_PARENTHESIS Entonces
+            Si c = CLOSING_PARENTHESIS Entonces
                 Decrementar numeroParentesis en 1
                 Si no ultimoEsOperador Entonces
                     Lanzar un Error("Un paréntesis no puede preceder o seguir a un operador." + "\n" + mostrarError(expression, contador))
@@ -44,20 +44,20 @@ Clase ExpressionConverter
             Fin Si
             Si esOperando(c) Entonces
                 Incrementar balanceOperandesYOperadores en 1
-                ultimoEsOperador = Verdadero
+                ultimoEsOperador <- Verdadero
             Fin Si
             Si esOperador(c) Entonces
                 Decrementar balanceOperandesYOperadores en 1
-                Si contador == 0 Entonces
+                Si contador = 0 Entonces
                     Lanzar un Error("La expresión no puede comenzar con un operador." + "\n" + mostrarError(expression, contador))
                 Fin Si
-                Si contador == longitud Entonces
+                Si contador = longitud Entonces
                     Lanzar un Error("La expresión no puede terminar con un operador." + "\n" + mostrarError(expression, contador))
                 Fin Si
                 Si no ultimoEsOperador Entonces
                     Lanzar un Error("Operador inesperado." + "\n" + mostrarError(expression, contador))
                 Fin Si
-                ultimoEsOperador = Falso
+                ultimoEsOperador <- Falso
             Fin Si
             Si balanceOperandesYOperadores > 1 Entonces
                 Lanzar un Error("Operando inesperado. Se esperaba un operador." + "\n" + mostrarError(expression, contador))
@@ -73,55 +73,55 @@ Clase ExpressionConverter
         Si numeroParentesis < 0 Entonces
             Lanzar un Error("')' inesperado. Falta un '('")
         Fin Si
-        Si balanceOperandesYOperadores == 1 Entonces
-            resultado = Verdadero
+        Si balanceOperandesYOperadores = 1 Entonces
+            resultado <- Verdadero
         Fin Si
         Devolver resultado
 
     Función push(stack[] de Cadena, elemento de Cadena)
-        Si top == longitud(stack) Entonces
+        Si top = longitud(stack) Entonces
             Lanzar un Error("Desbordamiento de pila")
         Fin Si
-        stack[top] = elemento
+        stack[top] <- elemento
         Incrementar top en 1
 
     Función pop(stack[] de Cadena) -> Cadena
-        Si top == 0 Entonces
+        Si top = 0 Entonces
             Lanzar un Error("Desbordamiento inferior de la pila")
         Fin Si
         Decrementar top en 1
         Devolver stack[top]
 
-    Entero top = 0
+    Entero top <- 0
 
     Función infijaAPostfija(cadena expression) -> Cadena
         Si no validarExpresionInfija(expression) Entonces
             Lanzar un Error("Expresión no válida")
         Fin Si
-        stack[] de Cadena = nuevo Cadena[longitud(expression)]
-        Cadena postfix = ""
+        stack[] de Cadena <- nuevo Cadena[longitud(expression)]
+        Cadena postfix <- ""
         Para cada carácter c en convertirACaracteres(expression) Hacer
             Si esOperando(c) Entonces
-                postfix += c
+                postfix <- postfix + c
             Fin Si
             Si esOperador(c) Entonces
                 Mientras top > 0 y obtenerPrioridad(stack[top-1][0]) >= obtenerPrioridad(c) Hacer
-                    postfix += pop(stack)
+                    postfix <- postfix + pop(stack)
                 Fin Mientras
                 push(stack, convertirACadena(c))
             Fin Si
-            Si c == OPENING_PARENTHESIS Entonces
+            Si c = OPENING_PARENTHESIS Entonces
                 push(stack, convertirACadena(c))
             Fin Si
-            Si c == CLOSING_PARENTHESIS Entonces
+            Si c = CLOSING_PARENTHESIS Entonces
                 Mientras top > 0 y stack[top-1][0] != OPENING_PARENTHESIS Hacer
-                    postfix += pop(stack)
+                    postfix <- postfix + pop(stack)
                 Fin Mientras
                 pop(stack)
             Fin Si
         Fin Para
         Mientras top > 0 Hacer
-            postfix += pop(stack)
+            postfix <- postfix + pop(stack)
         Fin Mientras
         Devolver postfix
 Fin Clase
