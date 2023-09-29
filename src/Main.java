@@ -18,7 +18,7 @@ public class Main {
 
       System.out.println("Dame una expresión postfija para ser evaluada: ");
       String postfixExpression = sc.nextLine();
-      double result = ExpressionConverter.evaluatePostfixExpression(postfixExpression);
+      double result = ExpressionConverter.evaluatePrefixExpression(postfixExpression);
       System.out.println("Resultado: " + result);
         
         sc.close();

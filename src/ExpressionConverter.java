@@ -156,48 +156,68 @@ public class ExpressionConverter {
         String postfix = infixToPostfix(reversedInfix.toString());
         return new StringBuilder(postfix).reverse().toString();
     }
+    private static int top2 = 0;
+
+    private static void push(double[] stack, double element) {
+        if (top2 == stack.length) {
+            throw new StackOverflowError("Stack overflow");
+        }
+        stack[top2] = element;
+        top2++;
+    }
+    private static double pop(double[] stack) {
+        if (top2 == 0) {
+            throw new StackOverflowError("Stack underflow");
+        }
+        top2--;
+        return stack[top2];
+    }
     public static double evaluatePostfixExpression(String expression) {
-        Stack<Double> operandStack = new Stack<>();
+        double[] operandStack = new double[expression.length()];
 
         for (char c : expression.toCharArray()) {
             if (Character.isLetter(c)) {
                 double value = askForVariableValue(c);
-                operandStack.push(value);
+                push(operandStack, value);
             } else if (Character.isDigit(c) || c == '.') {
                 StringBuilder operand = new StringBuilder();
                 while (Character.isDigit(c) || c == '.') {
                     operand.append(c);
-                    if (++top == expression.length()) {
+                    if (++top2 == expression.length()) {
                         break;
                     }
-                    c = expression.charAt(top);
+                    c = expression.charAt(top2);
                 }
-                operandStack.push(Double.parseDouble(operand.toString()));
-                top--;
+                push(operandStack, Double.parseDouble(operand.toString()));
+                top2--;
             } else if (c == '+') {
-                double operand2 = operandStack.pop();
-                double operand1 = operandStack.pop();
-                operandStack.push(operand1 + operand2);
+                double operand2 = pop(operandStack);
+                double operand1 = pop(operandStack);
+                push(operandStack, operand1 + operand2);
             } else if (c == '-') {
-                double operand2 = operandStack.pop();
-                double operand1 = operandStack.pop();
-                operandStack.push(operand1 - operand2);
+                double operand2 = pop(operandStack);
+                double operand1 = pop(operandStack);
+                push(operandStack, operand1 - operand2);
             } else if (c == '*') {
-                double operand2 = operandStack.pop();
-                double operand1 = operandStack.pop();
-                operandStack.push(operand1 * operand2);
+                double operand2 = pop(operandStack);
+                double operand1 = pop(operandStack);
+                push(operandStack, operand1 * operand2);
             } else if (c == '/') {
-                double operand2 = operandStack.pop();
-                double operand1 = operandStack.pop();
+                double operand2 = pop(operandStack);
+                double operand1 = pop(operandStack);
                 if (operand2 == 0) {
                     throw new ArithmeticException("Division by zero");
                 }
-                operandStack.push(operand1 / operand2);
+                push(operandStack, operand1 / operand2);
+            } else if(c == '^'){
+                double operand2 = pop(operandStack);
+                double operand1 = pop(operandStack);
+                push(operandStack, Math.pow(operand1, operand2));
             }
         }
 
-        if (operandStack.size() == 1) {
-            return operandStack.pop();
+        if (top2 == 1) {
+            return pop(operandStack);
         } else {
             throw new IllegalArgumentException("Invalid expression");
         }
@@ -215,6 +235,61 @@ public class ExpressionConverter {
 
 
 
+
+
+
+    public static double evaluatePrefixExpression(String expression) {
+        double[] stack = new double[expression.length()];
+        int index = expression.length() - 1;
+  
+          while (index >= 0) {
+              char currentChar = expression.charAt(index);
+  
+              if (Character.isLetter(currentChar)) {
+                  // Si es una letra, solicitar el valor de la variable y apilarlo
+                  Scanner scanner = new Scanner(System.in);
+                  System.out.print("Ingrese el valor para '" + currentChar + "': ");
+                  double value = scanner.nextDouble();
+                  push(stack, value);
+                  index--;
+              } else if (isOperator(currentChar)) {
+                  // Si es un operador, realizar la operación y apilar el resultado
+                  double operand1 = pop(stack);
+                  double operand2 = pop(stack);
+                  double result = performOperation(currentChar, operand1, operand2);
+                    push(stack, result);
+                  index--;
+              } else if (currentChar == ' ') {
+                  // Ignorar espacios en blanco
+                  index--;
+              } else {
+                  throw new IllegalArgumentException("Carácter no válido: " + currentChar);
+              }
+          }
+  
+          return pop(stack);
+      }
+  
+  
+      private static double performOperation(char operator, double operand1, double operand2) {
+          switch (operator) {
+              case '+':
+                  return operand1 + operand2;
+              case '-':
+                  return operand1 - operand2;
+              case '*':
+                  return operand1 * operand2;
+              case '/':
+                  if (operand2 == 0) {
+                      throw new ArithmeticException("División por cero");
+                  }
+                  return operand1 / operand2;
+                case '^':
+                    return Math.pow(operand1, operand2);
+              default:
+                  throw new IllegalArgumentException("Operador no válido: " + operator);
+          }
+      }
 
     
 }
