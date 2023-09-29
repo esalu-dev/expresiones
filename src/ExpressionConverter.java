@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.Stack;
 
 public class ExpressionConverter {
     private final static char CLOSING_PARENTHESIS = ')';
@@ -190,32 +189,17 @@ public class ExpressionConverter {
                 }
                 push(operandStack, Double.parseDouble(operand.toString()));
                 top2--;
-            } else if (c == '+') {
+            } else if (isOperator(c)) {
                 double operand2 = pop(operandStack);
                 double operand1 = pop(operandStack);
-                push(operandStack, operand1 + operand2);
-            } else if (c == '-') {
-                double operand2 = pop(operandStack);
-                double operand1 = pop(operandStack);
-                push(operandStack, operand1 - operand2);
-            } else if (c == '*') {
-                double operand2 = pop(operandStack);
-                double operand1 = pop(operandStack);
-                push(operandStack, operand1 * operand2);
-            } else if (c == '/') {
-                double operand2 = pop(operandStack);
-                double operand1 = pop(operandStack);
-                if (operand2 == 0) {
-                    throw new ArithmeticException("Division by zero");
-                }
-                push(operandStack, operand1 / operand2);
-            } else if(c == '^'){
-                double operand2 = pop(operandStack);
-                double operand1 = pop(operandStack);
-                push(operandStack, Math.pow(operand1, operand2));
-            }
+                double result = performOperation(c, operand1, operand2);
+                push(operandStack, result);
+            } else if (c == ' ') {
+                // Ignorar espacios en blanco
+            } else {
+                throw new IllegalArgumentException("Carácter no válido: " + c);
+            }      
         }
-
         if (top2 == 1) {
             return pop(operandStack);
         } else {
@@ -233,11 +217,6 @@ public class ExpressionConverter {
         return scanner.nextDouble();
     }
 
-
-
-
-
-
     public static double evaluatePrefixExpression(String expression) {
         double[] stack = new double[expression.length()];
         int index = expression.length() - 1;
@@ -247,9 +226,7 @@ public class ExpressionConverter {
   
               if (Character.isLetter(currentChar)) {
                   // Si es una letra, solicitar el valor de la variable y apilarlo
-                  Scanner scanner = new Scanner(System.in);
-                  System.out.print("Ingrese el valor para '" + currentChar + "': ");
-                  double value = scanner.nextDouble();
+                  double value = askForVariableValue(currentChar);
                   push(stack, value);
                   index--;
               } else if (isOperator(currentChar)) {
