@@ -1,3 +1,6 @@
+import java.util.Scanner;
+import java.util.Stack;
+
 public class ExpressionConverter {
     private final static char CLOSING_PARENTHESIS = ')';
     private final static char OPENING_PARENTHESIS = '(';
@@ -153,5 +156,65 @@ public class ExpressionConverter {
         String postfix = infixToPostfix(reversedInfix.toString());
         return new StringBuilder(postfix).reverse().toString();
     }
+    public static double evaluatePostfixExpression(String expression) {
+        Stack<Double> operandStack = new Stack<>();
+
+        for (char c : expression.toCharArray()) {
+            if (Character.isLetter(c)) {
+                double value = askForVariableValue(c);
+                operandStack.push(value);
+            } else if (Character.isDigit(c) || c == '.') {
+                StringBuilder operand = new StringBuilder();
+                while (Character.isDigit(c) || c == '.') {
+                    operand.append(c);
+                    if (++top == expression.length()) {
+                        break;
+                    }
+                    c = expression.charAt(top);
+                }
+                operandStack.push(Double.parseDouble(operand.toString()));
+                top--;
+            } else if (c == '+') {
+                double operand2 = operandStack.pop();
+                double operand1 = operandStack.pop();
+                operandStack.push(operand1 + operand2);
+            } else if (c == '-') {
+                double operand2 = operandStack.pop();
+                double operand1 = operandStack.pop();
+                operandStack.push(operand1 - operand2);
+            } else if (c == '*') {
+                double operand2 = operandStack.pop();
+                double operand1 = operandStack.pop();
+                operandStack.push(operand1 * operand2);
+            } else if (c == '/') {
+                double operand2 = operandStack.pop();
+                double operand1 = operandStack.pop();
+                if (operand2 == 0) {
+                    throw new ArithmeticException("Division by zero");
+                }
+                operandStack.push(operand1 / operand2);
+            }
+        }
+
+        if (operandStack.size() == 1) {
+            return operandStack.pop();
+        } else {
+            throw new IllegalArgumentException("Invalid expression");
+        }
+    }
+
+    private static double askForVariableValue(char variable) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Ingrese el valor para la variable " + variable + ": ");
+        while (!scanner.hasNextDouble()) {
+            System.out.print("Valor no válido. Ingrese un número: ");
+            scanner.next();
+        }
+        return scanner.nextDouble();
+    }
+
+
+
+
     
 }
