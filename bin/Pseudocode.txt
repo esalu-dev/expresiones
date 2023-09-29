@@ -143,12 +143,22 @@ Clase ExpressionConverter
 
     Función evaluarExpresionPostfija(cadena expression) -> Decimal
         Arreglo de Decimal operandStack <- nuevo Arreglo de Decimal[longitud(expression)]
+        Lista de Carácter operands <- nueva Lista de Carácter
+        Lista de Decimal values <- nueva Lista de Decimal
+
         Entero top2 <- 0
 
         Para cada carácter c en convertirACaracteres(expression) Hacer
             Si esLetra(c) Entonces
-                Decimal valor <- pedirValorVariable(c)
-                push(operandStack, valor)
+                Si contiene(operands, c) Entonces
+                    Entero flag <- índiceDe(operands, c)
+                    push(operandStack, obtenerElemento(values, flag))
+                Sino
+                    agregar(operands, c)
+                    Decimal valor <- pedirValorVariable(c)
+                    agregar(values, valor)
+                    push(operandStack, valor)
+                Fin Si
             Sino Si esDígito(c) o c = '.' Entonces
                 CadenaBuilder operando <- nuevo CadenaBuilder()
                 Mientras esDígito(c) o c = '.' Hacer
@@ -159,8 +169,7 @@ Clase ExpressionConverter
                     Fin Si
                     c <- expression.charAt(top2)
                 Fin Mientras
-                Decimal valor <- convertirADecimal(operando.toString())
-                push(operandStack, valor)
+                push(operandStack, convertirADecimal(operando.toString()))
                 Decrementar top2 en 1
             Sino Si esOperador(c) Entonces
                 Decimal operando2 <- pop(operandStack)
@@ -181,6 +190,7 @@ Clase ExpressionConverter
         Fin Si
     Fin Función
 
+
     Función pedirValorVariable(caracter variable) -> Decimal
         Escáner scanner <- nuevo Escáner(System.in)
         Escribir("Ingrese el valor para la variable " + variable + ": ")
@@ -194,14 +204,23 @@ Clase ExpressionConverter
     Función evaluarExpresionPrefija(cadena expression) -> Decimal
         Arreglo de Decimal stack <- nuevo Arreglo de Decimal[longitud(expression)]
         Entero index <- longitud(expression) - 1
+        Lista de Carácter operands <- nueva Lista de Carácter
+        Lista de Decimal values <- nueva Lista de Decimal
 
         Mientras index >= 0 Hacer
             Carácter currentChar <- expression.charAt(index)
 
             Si esLetra(currentChar) Entonces
+                Si contiene(operands, currentChar) Entonces
+                    Entero flag <- índiceDe(operands, currentChar)
+                    push(stack, obtenerElemento(values, flag))
+                Sino
+                    agregar(operands, currentChar)
+                    Decimal valor <- pedirValorVariable(currentChar)
+                    agregar(values, valor)
+                    push(stack, valor)
+                Fin Si
                 // Si es una letra, solicitar el valor de la variable y apilarlo
-                Decimal valor <- pedirValorVariable(currentChar)
-                push(stack, valor)
                 Decrementar index en 1
             Sino Si esOperador(currentChar) Entonces
                 // Si es un operador, realizar la operación y apilar el resultado
@@ -220,6 +239,7 @@ Clase ExpressionConverter
 
         Devolver pop(stack)
     Fin Función
+
 
     Función realizarOperación(caracter operador, Decimal operando1, Decimal operando2) -> Decimal
         Cambiar operador Hacer
