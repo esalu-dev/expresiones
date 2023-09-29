@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ExpressionConverter {
@@ -173,11 +175,22 @@ public class ExpressionConverter {
     }
     public static double evaluatePostfixExpression(String expression) {
         double[] operandStack = new double[expression.length()];
+        List<Character> operands = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+
 
         for (char c : expression.toCharArray()) {
             if (Character.isLetter(c)) {
-                double value = askForVariableValue(c);
-                push(operandStack, value);
+                if(operands.contains(c)){
+                    int flag = operands.indexOf(c);
+                    push(operandStack, values.get(flag));
+                }
+                else{
+                    operands.add(c);
+                    double value = askForVariableValue(c);
+                    values.add(value);
+                    push(operandStack, value);
+                }
             } else if (Character.isDigit(c) || c == '.') {
                 StringBuilder operand = new StringBuilder();
                 while (Character.isDigit(c) || c == '.') {
@@ -220,14 +233,24 @@ public class ExpressionConverter {
     public static double evaluatePrefixExpression(String expression) {
         double[] stack = new double[expression.length()];
         int index = expression.length() - 1;
+        List<Character> operands = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
   
           while (index >= 0) {
               char currentChar = expression.charAt(index);
   
               if (Character.isLetter(currentChar)) {
+                if(operands.contains(currentChar)){
+                    int flag = operands.indexOf(currentChar);
+                    push(stack, values.get(flag));
+                }
+                else{
+                    operands.add(currentChar);
+                    double value = askForVariableValue(currentChar);
+                    values.add(value);
+                    push(stack, value);
+                }
                   // Si es una letra, solicitar el valor de la variable y apilarlo
-                  double value = askForVariableValue(currentChar);
-                  push(stack, value);
                   index--;
               } else if (isOperator(currentChar)) {
                   // Si es un operador, realizar la operación y apilar el resultado
