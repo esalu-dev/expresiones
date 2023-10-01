@@ -1,0 +1,17 @@
+Inicio
+   Función infijaAPrefija(cadena expression) -> Cadena
+      Si no validarExpresionInfija(expression) Entonces
+         Lanzar un Error("Expresión no válida")
+      Fin Si
+      CadenaBuilder reversedInfix <- nuevo CadenaBuilder(reverse(expression))
+      Para entero i <- 0; i < longitud(reversedInfix); Incrementar i en 1 Hacer
+         Si reversedInfix[i] = '(' Entonces
+               reversedInfix[i] <- ')'
+         Sino Si reversedInfix[i] = ')' Entonces
+               reversedInfix[i] <- '('
+         Fin Si
+      Fin Para
+      Cadena postfix <- infijaAPostfija(convertirACadena(reversedInfix.toString()))
+      Devolver reverse(postfix)
+   Fin Función
+Fin

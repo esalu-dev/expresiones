@@ -1,0 +1,10 @@
+Inicio
+   Entero top <- 0
+   Función pop(stack[] de Cadena) -> Cadena
+        Si top = 0 Entonces
+            Lanzar un Error("Desbordamiento inferior de la pila")
+        Fin Si
+        Decrementar top en 1
+        Devolver stack[top]
+   Fin Función
+Fin

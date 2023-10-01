@@ -1,0 +1,40 @@
+Inicio
+   Función evaluarExpresionPrefija(cadena expression) -> Decimal
+      Arreglo de Decimal stack <- nuevo Arreglo de Decimal[longitud(expression)]
+      Entero index <- longitud(expression) - 1
+      Lista de Carácter operands <- nueva Lista de Carácter
+      Lista de Decimal values <- nueva Lista de Decimal
+
+      Mientras index >= 0 Hacer
+         Carácter currentChar <- expression.charAt(index)
+
+         Si esLetra(currentChar) Entonces
+               Si contiene(operands, currentChar) Entonces
+                  Entero flag <- índiceDe(operands, currentChar)
+                  push(stack, obtenerElemento(values, flag))
+               Sino
+                  agregar(operands, currentChar)
+                  Decimal valor <- pedirValorVariable(currentChar)
+                  agregar(values, valor)
+                  push(stack, valor)
+               Fin Si
+               // Si es una letra, solicitar el valor de la variable y apilarlo
+               Decrementar index en 1
+         Sino Si esOperador(currentChar) Entonces
+               // Si es un operador, realizar la operación y apilar el resultado
+               Decimal operando1 <- pop(stack)
+               Decimal operando2 <- pop(stack)
+               Decimal resultado <- realizarOperación(currentChar, operando1, operando2)
+               push(stack, resultado)
+               Decrementar index en 1
+         Sino Si currentChar = ' ' Entonces
+               // Ignorar espacios en blanco
+               Decrementar index en 1
+         Sino
+               Lanzar un Error("Carácter no válido: " + currentChar)
+         Fin Si
+      Fin Mientras
+
+      Devolver pop(stack)
+   Fin Función
+Fin

@@ -1,0 +1,33 @@
+Inicio
+   Función infijaAPostfija(cadena expression) -> Cadena
+        Si no validarExpresionInfija(expression) Entonces
+            Lanzar un Error("Expresión no válida")
+        Fin Si
+        stack[] de Cadena <- nuevo Cadena[longitud(expression)]
+        Cadena postfix <- ""
+        Para cada carácter c en convertirACaracteres(expression) Hacer
+            Si esOperando(c) Entonces
+                postfix <- postfix + c
+            Fin Si
+            Si esOperador(c) Entonces
+                Mientras top > 0 y obtenerPrioridad(stack[top-1][0]) >= obtenerPrioridad(c) Hacer
+                    postfix <- postfix + pop(stack)
+                Fin Mientras
+                push(stack, convertirACadena(c))
+            Fin Si
+            Si c = OPENING_PARENTHESIS Entonces
+                push(stack, convertirACadena(c))
+            Fin Si
+            Si c = CLOSING_PARENTHESIS Entonces
+                Mientras top > 0 y stack[top-1][0] != OPENING_PARENTHESIS Hacer
+                    postfix <- postfix + pop(stack)
+                Fin Mientras
+                pop(stack)
+            Fin Si
+        Fin Para
+        Mientras top > 0 Hacer
+            postfix <- postfix + pop(stack)
+        Fin Mientras
+        Devolver postfix
+   Fin Función
+Fin

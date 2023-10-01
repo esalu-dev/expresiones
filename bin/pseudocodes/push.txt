@@ -1,0 +1,10 @@
+Inicio
+   Entero top <- 0
+   Función push(stack[] de Cadena, elemento de Cadena)
+         Si top = longitud(stack) Entonces
+               Lanzar un Error("Desbordamiento de pila")
+         Fin Si
+         stack[top] <- elemento
+         Incrementar top en 1
+   Fin Función
+Fin

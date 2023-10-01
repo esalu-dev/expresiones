@@ -1,0 +1,50 @@
+Inicio
+   Función evaluarExpresionPostfija(cadena expression) -> Decimal
+      Arreglo de Decimal operandStack <- nuevo Arreglo de Decimal[longitud(expression)]
+      Lista de Carácter operands <- nueva Lista de Carácter
+      Lista de Decimal values <- nueva Lista de Decimal
+
+      Entero top2 <- 0
+
+      Para cada carácter c en convertirACaracteres(expression) Hacer
+         Si esLetra(c) Entonces
+               Si contiene(operands, c) Entonces
+                  Entero flag <- índiceDe(operands, c)
+                  push(operandStack, obtenerElemento(values, flag))
+               Sino
+                  agregar(operands, c)
+                  Decimal valor <- pedirValorVariable(c)
+                  agregar(values, valor)
+                  push(operandStack, valor)
+               Fin Si
+         Sino Si esDígito(c) o c = '.' Entonces
+               CadenaBuilder operando <- nuevo CadenaBuilder()
+               Mientras esDígito(c) o c = '.' Hacer
+                  operando.anexar(c)
+                  Incrementar top2 en 1
+                  Si top2 = longitud(expression) Entonces
+                     Romper
+                  Fin Si
+                  c <- expression.charAt(top2)
+               Fin Mientras
+               push(operandStack, convertirADecimal(operando.toString()))
+               Decrementar top2 en 1
+         Sino Si esOperador(c) Entonces
+               Decimal operando2 <- pop(operandStack)
+               Decimal operando1 <- pop(operandStack)
+               Decimal resultado <- realizarOperación(c, operando1, operando2)
+               push(operandStack, resultado)
+         Sino Si c = ' ' Entonces
+               // Ignorar espacios en blanco
+         Sino
+               Lanzar un Error("Carácter no válido: " + c)
+         Fin Si      
+      Fin Para
+
+      Si top2 = 1 Entonces
+         Devolver pop(operandStack)
+      Sino
+         Lanzar un Error("Expresión no válida")
+      Fin Si
+   Fin Función
+Fin

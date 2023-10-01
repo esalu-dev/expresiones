@@ -1,0 +1,56 @@
+Inicio   
+   Función validarExpresionInfija(cadena expression) -> Booleano
+        Booleano resultado <- Falso
+        Entero balanceOperandesYOperadores <- 0
+        Entero numeroParentesis <- 0
+        Entero contador <- 0
+        Booleano ultimoEsOperador <- Falso
+        Entero longitud <- longitud(expression) - 1
+        Para cada carácter c en convertirACaracteres(expression) Hacer
+            Si c = OPENING_PARENTHESIS Entonces
+                Incrementar numeroParentesis en 1
+                ultimoEsOperador <- Falso
+            Fin Si
+            Si c = CLOSING_PARENTHESIS Entonces
+                Decrementar numeroParentesis en 1
+                Si no ultimoEsOperador Entonces
+                    Lanzar un Error("Un paréntesis no puede preceder o seguir a un operador." + "\n" + mostrarError(expression, contador))
+                Fin Si
+            Fin Si
+            Si esOperando(c) Entonces
+                Incrementar balanceOperandesYOperadores en 1
+                ultimoEsOperador <- Verdadero
+            Fin Si
+            Si esOperador(c) Entonces
+                Decrementar balanceOperandesYOperadores en 1
+                Si contador = 0 Entonces
+                    Lanzar un Error("La expresión no puede comenzar con un operador." + "\n" + mostrarError(expression, contador))
+                Fin Si
+                Si contador = longitud Entonces
+                    Lanzar un Error("La expresión no puede terminar con un operador." + "\n" + mostrarError(expression, contador))
+                Fin Si
+                Si no ultimoEsOperador Entonces
+                    Lanzar un Error("Operador inesperado." + "\n" + mostrarError(expression, contador))
+                Fin Si
+                ultimoEsOperador <- Falso
+            Fin Si
+            Si balanceOperandesYOperadores > 1 Entonces
+                Lanzar un Error("Operando inesperado. Se esperaba un operador." + "\n" + mostrarError(expression, contador))
+            Fin Si
+            Si balanceOperandesYOperadores < 0 Entonces
+                Lanzar un Error("Operador inesperado. Se esperaba un operando en la posición." + "\n" + mostrarError(expression, contador))
+            Fin Si
+            Incrementar contador en 1
+        Fin Para
+        Si numeroParentesis > 0 Entonces
+            Lanzar un Error("'(' inesperado. Falta un ')'")
+        Fin Si
+        Si numeroParentesis < 0 Entonces
+            Lanzar un Error("')' inesperado. Falta un '('")
+        Fin Si
+        Si balanceOperandesYOperadores = 1 Entonces
+            resultado <- Verdadero
+        Fin Si
+        Devolver resultado
+   Fin Función
+Fin
