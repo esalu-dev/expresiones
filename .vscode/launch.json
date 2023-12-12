@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Graphic",
+      "request": "launch",
+      "mainClass": "Graphic",
+      "projectName": "expresiones_e514335a"
+    },
+    {
+      "type": "java",
       "name": "Test",
       "request": "launch",
       "mainClass": "Test",
