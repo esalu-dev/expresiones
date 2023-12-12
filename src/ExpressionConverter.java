@@ -1,6 +1,9 @@
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 
 public class ExpressionConverter {
     private final static char CLOSING_PARENTHESIS = ')';
@@ -173,10 +176,9 @@ public class ExpressionConverter {
         top2--;
         return stack[top2];
     }
-    public static double evaluatePostfixExpression(String expression) {
+    public static double evaluatePostfixExpression(String expression, List<Double> values, List<Character> operands) {
         double[] operandStack = new double[expression.length()];
-        List<Character> operands = new ArrayList<>();
-        List<Double> values = new ArrayList<>();
+        
 
 
         for (char c : expression.toCharArray()) {
@@ -230,11 +232,10 @@ public class ExpressionConverter {
         return scanner.nextDouble();
     }
 
-    public static double evaluatePrefixExpression(String expression) {
+    public static double evaluatePrefixExpression(String expression, List<Double> values, List<Character> operands) {
         double[] stack = new double[expression.length()];
         int index = expression.length() - 1;
-        List<Character> operands = new ArrayList<>();
-        List<Double> values = new ArrayList<>();
+        
   
           while (index >= 0) {
               char currentChar = expression.charAt(index);
@@ -290,6 +291,39 @@ public class ExpressionConverter {
                   throw new IllegalArgumentException("Operador no válido: " + operator);
           }
       }
+  
+    public static double evaluateInfixExpression(String expression, List<Double> values, List<Character> operands) {
+        String expresionInfija = "";
+        for(char c : expression.toCharArray()){
+            if(isOperand(c)){
+                int flag = operands.indexOf(c);
+                String valor = Double.toString(values.get(flag));
+                expresionInfija += valor;
+            }
+            else{
+                expresionInfija += c;
+            }
+        }
+        System.out.println(expresionInfija);
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("nashorn"); // Utiliza el motor JavaScript
 
-    
+        
+        // Evalúa la expresión
+        Object result=null;
+        try {
+            result = engine.eval(expresionInfija);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+
+        // Convierte el resultado a un valor double
+        if (result instanceof Number) {
+            return ((Number) result).doubleValue();
+        } else {
+            throw new IllegalArgumentException("La expresión no se pudo evaluar a un valor numérico.");
+        }
+    }
+      
 }
+
