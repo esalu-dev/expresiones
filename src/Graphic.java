@@ -1,17 +1,124 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-public class Graphic {
-   static String expresion = "(a+b*c) - (d*e+f)*g";
-   public static void main(String[] args) {
-      List<Double> values = new ArrayList<>();
+public class Graphic{
+  static String expresion;
+  static String expresionPrefija;
+  static String expresionPostfija;
+
+  public static void clearScreen(){
+    try {
+      if (System.getProperty("os.name").contains("Windows")) {
+        // Si estás en Windows, utiliza "cls" para limpiar la consola
+        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+      } else {
+          // En otros sistemas, utiliza "clear" para limpiar la consola
+          Runtime.getRuntime().exec("clear");
+      }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+  }
+  public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+    boolean salir = false;
+    while(!salir){
+      clearScreen();
+      System.out.println("====================================");
+      System.out.println("Sistema de expresiones (PILAS)");
+      System.out.println("Selecciona una opción: ");
+      System.out.println("1. Ingresar expresión infija");
+      System.out.println("2. Convertir expresión infija a postfija");
+      System.out.println("3. Convertir expresión infija a prefija");
+      System.out.println("4. Evaluar expresiones");
+      System.out.println("5. Salir");
+      System.out.print("Ingresa una opción: ");
+      int opcion = Integer.parseInt(sc.nextLine());
+      switch(opcion){
+        case 1:
+          clearScreen();
+          System.out.println("Ingresar la expresión para ser validada: ");
+          System.out.print("Ingresa la expresión infija: ");
+          expresion = sc.nextLine();
+          System.out.println("La expresión es: " + expresion);
+          System.out.println("¿Es válida? " + ExpressionConverter2.validateInfixExpression(expresion));
+          if(ExpressionConverter2.validateInfixExpression(expresion)){
+             System.out.println("Expresión guardada en memoria");
+             System.out.println("Enter para continuar..."); sc.nextLine();
+          }
+          break;
+        case 2:
+          clearScreen();
+          if(expresion == null){
+            System.out.println("No hay expresión guardada en memoria. Por favor ingresa la expresión infija primero.");
+            System.out.println("Enter para continuar..."); sc.nextLine();
+            break;
+          }
+          System.out.println("Convertir expresión infija a postfija");
+          System.out.println("La expresión es: " + expresion);
+          expresionPostfija = ExpressionConverter2.infixToPostfix(expresion);
+          System.out.println("La expresión postfija es: " + expresionPostfija);
+          System.out.println("Enter para continuar..."); sc.nextLine();
+          break;
+        case 3:
+          clearScreen();
+          if(expresion == null){
+            System.out.println("No hay expresión guardada en memoria. Por favor ingresa la expresión infija primero.");
+            System.out.println("Enter para continuar..."); sc.nextLine();
+            break;
+          }
+          System.out.println("Convertir expresión infija a prefija");
+          System.out.println("La expresión es: " + expresion);
+          expresionPrefija = ExpressionConverter2.infixToPrefix(expresion);
+          System.out.println("La expresión prefija es: " + expresionPrefija);
+          System.out.println("Enter para continuar..."); sc.nextLine();
+          break;
+        case 4:
+          List<Double> values = new ArrayList<>();
           List<Character> operadores = new ArrayList<>();
-      System.out.println("Conversión de expresiones infijas a postfijas y prefijas");
-      System.out.println("Expresión infija: " + expresion);
-      String expresionPostfija = ExpressionConverter2.infixToPostfix(expresion);
-      System.out.println("Expresión postfija: " + expresionPostfija);
-      System.out.println("Expresión prefija: " + ExpressionConverter2.infixToPrefix(expresion));
-      System.out.println("\n\nEvaluación de expresiones infijas, postfijas y prefijas");
-      System.out.println(ExpressionConverter2.evaluatePostfixExpression(expresionPostfija, values, operadores));
-   }
+
+          clearScreen();
+          System.out.println("Evaluar expresiones infija, prefija y postfija");
+          
+          if(expresion == null){
+            System.out.println("No hay expresión guardada en memoria. Por favor ingresa la expresión infija primero.");
+            System.out.println("Enter para continuar..."); sc.nextLine();
+            break;
+          }
+          if(expresionPrefija == null){
+            System.out.println("No hay expresión prefija guardada en memoria. Por favor convierte la expresión infija a prefija primero.");
+            System.out.println("Enter para continuar..."); sc.nextLine();
+            break;
+          }
+          if(expresionPostfija == null){
+            System.out.println("No hay expresión postfija guardada en memoria. Por favor convierte la expresión infija a postfija primero.");
+            System.out.println("Enter para continuar..."); sc.nextLine();
+            break;
+          }
+          
+            System.out.println("\n\n\nEvaluar expresión postfija");
+          System.out.println("La expresión postfija es: " + expresionPostfija);
+          System.out.println("El resultado es: " + ExpressionConverter2.evaluatePostfixExpression(expresionPostfija, values, operadores));
+          System.out.println("\n\n\nEvaluar expresión prefija");
+          System.out.println("La expresión prefia es: "+ expresionPrefija);
+          System.out.println("El resultado es: " + ExpressionConverter2.evaluatePrefixExpression(expresionPrefija, values, operadores));
+         System.out.println("\n\n\nEvaluar expresión infija");
+          System.out.println("La expresión infija es: " + expresion);
+          System.out.println("El resultado es: " + ExpressionConverter.evaluateInfixExpression(expresion, values, operadores));
+
+          System.out.println("\nEnter para continuar..."); sc.nextLine();
+          break;
+        default:
+          System.out.println("Saliendo...");
+          salir = true;
+          break;
+      }
+    }
+
+    sc.close();
+  }
 }

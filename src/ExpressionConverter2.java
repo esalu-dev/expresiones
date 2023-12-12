@@ -189,7 +189,7 @@ public static String infixToPrefix(String expression){
    System.out.println("Expresión postfija invertida: " + postfix);
    return new StringBuilder(postfix).reverse().toString();
 }
-private static int top2 = 0;
+private static int top2 = -1;
 
 private static double askForVariableValue(char variable) {
         Scanner scanner = new Scanner(System.in);
@@ -242,29 +242,75 @@ public static double evaluatePostfixExpression(String expression, List<Double> v
         }
 
         // Imprimir estado final de la pila después de procesar todos los caracteres
-        System.out.println("Pila final: " + Arrays.toString(Arrays.copyOfRange(operandStack, 0, top2)));
+        System.out.println("Pila final: " + Arrays.toString(Arrays.copyOfRange(operandStack, 0, top2+1)));
 
-        if (top2-1 == 0) {
+        if (top2 == 0) {
             return pop(operandStack);
         } else {
             throw new IllegalArgumentException("Expresión inválida");
         }
     }
+    public static double evaluatePrefixExpression(String expression, List<Double> values, List<Character> operands) {
+      top2 = -1;
+      double[] stack = new double[expression.length()];
+      int index = expression.length() - 1;
 
-    private static void push(double[] stack, double element) {
-      if (top2 == stack.length) {
-          throw new StackOverflowError("Stack overflow");
+      while (index >= 0) {
+          char currentChar = expression.charAt(index);
+
+          // Imprimir estado de la pila antes de procesar el caracter actual
+          System.out.println("Pila: " + Arrays.toString(Arrays.copyOfRange(stack, 0, top2 + 1)));
+          try{
+               Thread.sleep(500);
+      
+            } catch (InterruptedException e) {
+               e.printStackTrace();
+          }
+
+          if (Character.isLetter(currentChar)) {
+              if (operands.contains(currentChar)) {
+                  int flag = operands.indexOf(currentChar);
+                  push(stack, values.get(flag));
+              } else {
+                  operands.add(currentChar);
+                  double value = askForVariableValue(currentChar);
+                  values.add(value);
+                  push(stack, value);
+              }
+              index--;
+          } else if (isOperator(currentChar)) {
+              double operand1 = pop(stack);
+              double operand2 = pop(stack);
+              double result = performOperation(currentChar, operand1, operand2);
+              push(stack, result);
+              index--;
+          } else if (currentChar == ' ') {
+              index--;
+          } else {
+              throw new IllegalArgumentException("Carácter no válido: " + currentChar);
+          }
       }
-      stack[top2] = element;
-      top2++;
-  }
-  private static double pop(double[] stack) {
+
+      // Imprimir estado final de la pila después de procesar todos los caracteres
+      System.out.println("Pila final: " + Arrays.toString(Arrays.copyOfRange(stack, 0, top2 + 1)));
+
       if (top2 == 0) {
-          throw new StackOverflowError("Stack underflow");
+          return pop(stack);
+      } else {
+          throw new IllegalArgumentException("Expresión inválida");
       }
-      top2--;
-      return stack[top2];
   }
+
+
+
+    private static void push(double[] stack, double value) {
+      stack[++top2] = value;
+  }
+
+  private static double pop(double[] stack) {
+      return stack[top2--];
+  }
+
   private static double performOperation(char operator, double operand1, double operand2) {
    switch (operator) {
        case '+':
