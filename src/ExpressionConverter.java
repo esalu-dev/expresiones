@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Scanner;
 import javax.script.ScriptEngine;
@@ -292,7 +297,8 @@ public class ExpressionConverter {
           }
       }
   
-    public static double evaluateInfixExpression(String expression, List<Double> values, List<Character> operands) {
+    public static String evaluateInfixExpression(String expression, List<Double> values, List<Character> operands) {
+        String line = null;
         String expresionInfija = "";
         for(char c : expression.toCharArray()){
             if(isOperand(c)){
@@ -300,29 +306,51 @@ public class ExpressionConverter {
                 String valor = Double.toString(values.get(flag));
                 expresionInfija += valor;
             }
+            
             else{
+               if(c == '^'){
+                  return Double.toString(evaluatePostfixExpression(infixToPostfix(expression), values, operands));
+               }
                 expresionInfija += c;
             }
         }
-        System.out.println(expresionInfija);
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("nashorn"); // Utiliza el motor JavaScript
 
-        
-        // Evalúa la expresión
-        Object result=null;
+
+        //System.out.println(expresionInfija);
+ 
         try {
-            result = engine.eval(expresionInfija);
-        } catch (ScriptException e) {
+            // Configura el proceso de ejecución para el script de Python
+            ProcessBuilder processBuilder = new ProcessBuilder("python", "./src/evaluar.py");
+            processBuilder.redirectErrorStream(true);
+
+            // Inicia el proceso
+            Process process = processBuilder.start();
+
+            // Obtén el OutputStream para escribir en la entrada estándar del proceso (stdin)
+            OutputStream outputStream = process.getOutputStream();
+            PrintWriter printWriter = new PrintWriter(outputStream);
+
+            // Escribe datos en el stdin del proceso (puedes enviar comandos al script de Python)
+            printWriter.println(expresionInfija);
+            printWriter.flush();
+
+            // Cierra la entrada estándar para indicar que no se enviarán más datos
+            outputStream.close();
+
+            // Lee la salida estándar del proceso (stdout)
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            while ((line = bufferedReader.readLine()) != null) {
+                //System.out.println(line);
+                return line;
+            }
+
+            process.waitFor();
+
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Convierte el resultado a un valor double
-        if (result instanceof Number) {
-            return ((Number) result).doubleValue();
-        } else {
-            throw new IllegalArgumentException("La expresión no se pudo evaluar a un valor numérico.");
-        }
+        return null;
     }
       
 }
